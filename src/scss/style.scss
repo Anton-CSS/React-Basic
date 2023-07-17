@@ -62,3 +62,22 @@
   border-radius: 16px;
   min-width: 250px;
 }
+
+.remove-btn {
+  margin-right: 0.5rem;
+}
+
+.item-enter {
+  transform: translateX(-150px)
+}
+.item-enter-active {
+  transform: translateX(0px);
+  transition: all 500ms ease-in;
+}
+.item-exit {
+  opacity: 1;
+}
+.item-exit-active {
+  transform: translateX(-150px);
+  transition: all 500ms ease-in;
+}
