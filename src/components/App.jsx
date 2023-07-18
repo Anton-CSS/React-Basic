@@ -6,15 +6,18 @@ import Modal from "./UI/Modal";
 import MyButton from "./UI/MyButton";
 import usePosts from "../hooks/usePost";
 import {PostService} from "../APIService/PostService";
+import Loader from "./UI/Loader";
+import useFetching from "../hooks/useFetching";
 
 const App = () => {
     const [posts, setPosts] = useState([]);
     const [filter, setFilter] = useState({sort:'', query: ''});
     const [modal, setModal] = useState(false);
-    const  fetchPosts = async () => {
+    const [fetchPosts, isPostLoading, postError] = useFetching(async () =>{
         const posts = await PostService.getAll();
         setPosts(posts);
-    }
+    });
+
     useEffect(() =>{
         fetchPosts();
     },[])
@@ -42,8 +45,15 @@ const App = () => {
             <hr style={{margin: "15px 0"}}/>
             <PostFilter filter={filter} setFilter={setFilter}/>
             {
-                (sortedAndSearchedPost.length !==0) ? <PostList posts={sortedAndSearchedPost} title={"Список постов"} func={removePost}/> : <h2 className="empty">Посты не найдены</h2>
+                postError && <h1>Произошла ошибка: {postError}</h1>
             }
+            {
+                isPostLoading ?
+                    <div className={'loader_box'}><Loader/></div>
+                    :
+                    (sortedAndSearchedPost.length !==0) ? <PostList posts={sortedAndSearchedPost} title={"Список постов"} func={removePost}/> : <h2 className="empty">Посты не найдены</h2>
+            }
+
         </div>
     );
 };
