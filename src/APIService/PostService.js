@@ -1,8 +1,5 @@
 export class PostService{
-    static async getAll(){
-
-            const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-            return await response.json();
-
+    static async getAll(limit=10, page=1){
+        return await fetch(`https://jsonplaceholder.typicode.com/posts?_limit=${limit}&_page=${page}`);
     }
 }

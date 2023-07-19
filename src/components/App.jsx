@@ -8,19 +8,32 @@ import usePosts from "../hooks/usePost";
 import {PostService} from "../APIService/PostService";
 import Loader from "./UI/Loader";
 import useFetching from "../hooks/useFetching";
+import getPages from "../utils/pages";
 
 const App = () => {
     const [posts, setPosts] = useState([]);
     const [filter, setFilter] = useState({sort:'', query: ''});
     const [modal, setModal] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
+    const [limit, setLimit] = useState(10);
+    const [page, setPage] = useState(1);
+    let pagesArray = [];
+        for (let i = 0; i < totalPages; i++) {
+            pagesArray.push(i + 1);
+        }
+
+
     const [fetchPosts, isPostLoading, postError] = useFetching(async () =>{
-        const posts = await PostService.getAll();
-        setPosts(posts);
+        const response = await PostService.getAll(limit, page);
+        const data =  await response.json()
+        setPosts(data);
+        const totalCount = +response.headers.get('X-Total-Count');
+        setTotalPages(getPages(totalCount, limit));
     });
 
     useEffect(() =>{
         fetchPosts();
-    },[])
+    },[page])
 
     const sortedAndSearchedPost = usePosts(posts, filter.sort, filter.query)
     const createPost = (newPost) =>{
@@ -32,7 +45,9 @@ const App = () => {
         setPosts(posts.filter(p => p.id !== id))
     };
 
-
+    const changePage = (page) =>{
+        setPage(page)
+    }
 
     return (
         <div className="App">
@@ -53,7 +68,12 @@ const App = () => {
                     :
                     (sortedAndSearchedPost.length !==0) ? <PostList posts={sortedAndSearchedPost} title={"Список постов"} func={removePost}/> : <h2 className="empty">Посты не найдены</h2>
             }
+            <div className="pages">
+            {
+                pagesArray.map((p,i) => <span onClick={()=>changePage(p)} className={page === p ? 'page page__current' : 'page'} key={i} style={{marginTop: '10px', marginRight: '10px'}}>{p}</span>)
 
+            }
+            </div>
         </div>
     );
 };
