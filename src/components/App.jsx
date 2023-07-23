@@ -1,80 +1,23 @@
-import React, {useEffect, useMemo, useState} from "react";
-import PostList from "./PostList";
-import PostForm from "./UI/PostForm";
-import PostFilter from "./UI/PostFilter";
-import Modal from "./UI/Modal";
-import MyButton from "./UI/MyButton";
-import usePosts from "../hooks/usePost";
-import {PostService} from "../APIService/PostService";
-import Loader from "./UI/Loader";
-import useFetching from "../hooks/useFetching";
-import getPages from "../utils/pages";
+import React from "react";
+import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
+import Posts from "./pages/Posts";
+import Homepage from "./pages/Homepage";
+import About from "./pages/About";
+import NavBar from "./pages/NavBar";
+
 
 const App = () => {
-    const [posts, setPosts] = useState([]);
-    const [filter, setFilter] = useState({sort:'', query: ''});
-    const [modal, setModal] = useState(false);
-    const [totalPages, setTotalPages] = useState(0);
-    const [limit, setLimit] = useState(10);
-    const [page, setPage] = useState(1);
-    let pagesArray = [];
-        for (let i = 0; i < totalPages; i++) {
-            pagesArray.push(i + 1);
-        }
-
-
-    const [fetchPosts, isPostLoading, postError] = useFetching(async () =>{
-        const response = await PostService.getAll(limit, page);
-        const data =  await response.json()
-        setPosts(data);
-        const totalCount = +response.headers.get('X-Total-Count');
-        setTotalPages(getPages(totalCount, limit));
-    });
-
-    useEffect(() =>{
-        fetchPosts();
-    },[page])
-
-    const sortedAndSearchedPost = usePosts(posts, filter.sort, filter.query)
-    const createPost = (newPost) =>{
-        setPosts([...posts, newPost]);
-        setModal(!modal);
-    }
-
-    const removePost = (id) =>{
-        setPosts(posts.filter(p => p.id !== id))
-    };
-
-    const changePage = (page) =>{
-        setPage(page)
-    }
 
     return (
-        <div className="App">
-            <MyButton style={{marginTop: "30px"}} onClick={()=> setModal(!modal)}>Создать пользователя</MyButton>
-            <MyButton style={{marginLeft: "30px"}} onClick={() => fetchPosts()}> Получить посты</MyButton>
-            <Modal visible={modal} setVisible={setModal}>
-                <PostForm create = {createPost}/>
-            </Modal>
-
-            <hr style={{margin: "15px 0"}}/>
-            <PostFilter filter={filter} setFilter={setFilter}/>
-            {
-                postError && <h1>Произошла ошибка: {postError}</h1>
-            }
-            {
-                isPostLoading ?
-                    <div className={'loader_box'}><Loader/></div>
-                    :
-                    (sortedAndSearchedPost.length !==0) ? <PostList posts={sortedAndSearchedPost} title={"Список постов"} func={removePost}/> : <h2 className="empty">Посты не найдены</h2>
-            }
-            <div className="pages">
-            {
-                pagesArray.map((p,i) => <span onClick={()=>changePage(p)} className={page === p ? 'page page__current' : 'page'} key={i} style={{marginTop: '10px', marginRight: '10px'}}>{p}</span>)
-
-            }
-            </div>
-        </div>
+        <BrowserRouter>
+            <NavBar/>
+            <Routes>
+                <Route path= '/' element={<Homepage/>}/>
+                <Route path= '/posts' element={<Posts/>}/>
+                <Route path= '/about' element={<About/>}/>
+                <Route path= '*' element={<Posts/>}/>
+            </Routes>
+        </BrowserRouter>
     );
 };
 
