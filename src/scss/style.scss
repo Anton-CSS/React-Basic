@@ -23,6 +23,7 @@
 }
 .btn{
   padding: 5px 15px;
+  margin-right: 10px;
   color: teal;
   font-size: 14px;
   background: transparent;
@@ -146,5 +147,11 @@
     text-transform: uppercase;
     color: white;
     font-weight: bold;
+    &.active{
+      color: teal;
+    }
   }
+}
+.post__btns{
+  display: flex;
 }
