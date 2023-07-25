@@ -6,7 +6,9 @@
   "scripts": {
     "watch": "webpack serve --open",
     "dev": "webpack",
-    "build": "webpack --node-env=production"
+    "build": "webpack --node-env=production",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
     "babel-loader": "^9.1.2",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
+    "gh-pages": "^5.0.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
@@ -31,6 +34,7 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   },
+  "homepage": "https://anton-css.github.io/React-Basic",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
